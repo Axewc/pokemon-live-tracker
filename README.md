@@ -239,3 +239,80 @@ sys.exit(app.exec_())
 - Mostrar cajas de PC, estadísticas de IVs/EVs.  
 - Integrar con un servidor web (Dash, Flask) para acceso remoto.  
 - Guardar historial de capturas en una base de datos SQLite.
+
+## 11. Estructura del proyecto
+
+```text
+pokemon-live-tracker/
+├── README.md
+├── LICENSE
+├── .gitignore
+├── requirements.txt
+│
+├── config/
+│   └── offsets.yaml
+│
+├── src/
+│   ├── __init__.py
+│   ├── main.py                # Punto de entrada: arranca el tracker y la GUI
+│   ├── memory_client.py       # Conexión RSP/GDB Stub y lectura de memoria
+│   ├── models.py              # Definición de estructuras ctypes (Pokemon, Team…)
+│   ├── parser.py              # Funciones para convertir bytes en objetos Python
+│   └── gui.py                 # Clase PyQt5 (o Tkinter) para mostrar los sprites y apodos
+│
+├── sprites/                   # Imágenes PNG extraídas / pokemon 
+│   ├── sprites/               # Repositorio clonado de PokeAPI
+│       ├── pokemon/           # Carpeta de sprites de Pokémon
+│           ├── 1.png                  # Índice 1 → Bulbasaur (por ejemplo)
+│           ├── 2.png                  # Índice 2 → Ivysaur
+│           └── …                      
+│
+├── docs/                      # (opcional) documentación extra, diagramas, notas de offsets
+│   └── design.md
+│
+└── tests/                     # (opcional) tests unitarios
+    ├── test_memory_client.py
+    └── test_parser.py
+```
+
+---
+
+### Breve descripción de cada elemento
+
+- **README.md**: instrucciones de instalación, uso y explicación de la arquitectura.  
+- **.gitignore**: típicamente ignores de Python (`__pycache__/`, `.env`, etc.) y de Citra (archivos de salida).  
+- **requirements.txt**: lista de dependencias (`pwntools`, `PyQt5`, `pillow`, …).  
+
+- **config/offsets.yaml**  
+
+  ```yaml
+  host: "127.0.0.1"
+  port: 1234
+  team_base_offset: 0x02345678
+  pokemon_struct_size: 0xA0
+  fields:
+    species_id: 0x00
+    level:      0x02
+    nickname:   0x20
+    image_index:0x40
+  ```  
+
+  Centraliza aquí los valores que cambian según ROM/version.
+
+- **src/**:  
+  - `main.py`: arranca la conexión, crea la ventana y lanza el bucle de refresco.  
+  - `memory_client.py`: encapsula la lógica de RSP (con pwntools o sockets) para `read_mem(addr, len)`.  
+  - `models.py`: define con `ctypes.Structure` las estructuras en memoria (p.ej. `class Pokemon(Structure)`).  
+  - `parser.py`: funciones como `parse_pokemon(bytes) → Pokemon`, y `get_team() → List[Pokemon]`.  
+  - `gui.py`: crea la ventana, carga sprites de `../sprites/{image_index}.png` y actualiza apodos.
+
+- **sprites/**:  
+  Carpeta plana con tus PNG. Asegúrate de que el nombre de cada archivo corresponda al `image_index` que lees (p.ej. `25.png` para Pikachu).
+
+- **docs/** (opcional):  
+  Diagramas de memoria, apuntes sobre watchpoints, cómo generar offsets, etc.
+
+- **tests/** (opcional):  
+  Pruebas unitarias para tu parser y tu cliente de memoria.  
+
+---

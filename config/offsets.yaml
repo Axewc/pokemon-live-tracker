@@ -1,0 +1,9 @@
+host: "127.0.0.1"
+port: 24689
+team_base_offset: 0x02345678
+pokemon_struct_size: 0xA0
+fields:
+  species_id: 0x00
+  level: 0x02
+  nickname: 0x20
+  image_index: 0x40

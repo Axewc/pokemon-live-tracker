@@ -229,7 +229,10 @@ sys.exit(app.exec_())
 1. Descarga/coloca los **sprites** en `./sprites/` nombrados según el índice en memoria.  
 2. Ajusta los **offsets** en el script Python.  
 3. Ejecuta tu ROM en Citra con GDB Stub activo.  
-4. Lanza `python tracker.py` y observa cómo aparece tu equipo en la ventana.
+4. Ejecuta el comando `python tracker.py` y observa cómo aparece tu equipo en la ventana.
+```markdown
+$ python -m src.main
+```
 
 ---
 
